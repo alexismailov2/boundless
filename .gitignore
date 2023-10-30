@@ -1,0 +1,34 @@
+src/*.exe
+src/boundless
+src/boundlessd
+src/test_boundless
+.*.swp
+*.*~*
+*.bak
+*.rej
+*.orig
+*.o
+*.patch
+.boundless
+
+# Compilation and Qt preprocessor part
+*.qm
+Makefile
+boundless-qt
+Boundless-Qt.app
+
+# Unit-tests
+Makefile.test
+boundless-qt_test
+
+# Resources cpp
+qrc_*.cpp
+
+# Qt creator
+*.pro.user
+
+# Mac specific
+.DS_Store
+build
+
+!src/leveldb*/Makefile

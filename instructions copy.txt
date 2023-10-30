@@ -1,0 +1,224 @@
+sudo apt-get update &&
+sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 &&
+sudo apt-get install libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev &&
+sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler &&
+sudo apt-get update &&
+sudo apt-get install libboost-all-dev &&
+sudo add-apt-repository ppa:bitcoin/bitcoin &&
+&& sudo apt-get update && sudo apt-get install libdb4.8-dev libdb4.8++-dev && sudo apt-get install libqt4-dev && sudo apt-get install qt4-qmake && sudo apt-get install git && sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils && sudo apt-get install libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev && sudo apt-get install libboost-all-dev && sudo apt-get install software-properties-common && sudo add-apt-repository ppa:bitcoin/bitcoin && sudo apt-get update && sudo apt-get install libdb4.8-dev libdb4.8++-dev && sudo apt-get install libminiupnpc-dev && sudo apt-get install libzmq3-dev && sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler && sudo apt-get install libqt4-dev libprotobuf-dev protobuf-compiler
+&& git clone https://github.com/boundless.git
+&& cd ./boundless/src
+&& make -f makefile.unix
+&& cd ..
+&& qmake && make
+
+##go to line 
+
+deb http://ppa.launchpad.net/bitcoin/bitcoin/ubuntu xenial main
+# deb-src http://ppa.launchpad.net/bitcoin/bitcoin/ubuntu xenial main
+
+
+##change name
+
+find . -type f -print0 | xargs -0 sed -i 's/litecoin/boundless/g'
+find . -type f -print0 | xargs -0 sed -i 's/Litecoin/Boundless/g'
+find . -type f -print0 | xargs -0 sed -i 's/LiteCoin/BoundLess/g'
+find . -type f -print0 | xargs -0 sed -i 's/LITECOIN/BOUNDLESS/g'
+find . -type f -print0 | xargs -0 sed -i 's/LTC/BLS/g'
+
+
+#ports
+
+find . -type f -print0 | xargs -0 sed -i 's/9333/3343/g'
+find . -type f -print0 | xargs -0 sed -i 's/9332/3342/g'
+
+
+/src/base58.h
+line 75 and 77 change hex prefix for coin
+
+
+**Alert key still active
+change to not be affected by litecoin's
+
+go to main folder
+cat alertkey.hex
+cat testnetalert.hex
+
+modify /src/alert.cpp
+
+cd ~/litecoin
+cat genesiscoinbase.hex
+modify line 2788 with pubkey of genesiscoinbase.hex (no colons)
+
+##peer magic
+main.cpp
+line 2745 testnet
+change last number of hex to be different than litecoin ex: f1 becomes f7
+also change main net
+line 3082
+
+##net.cpp changing dns seeds
+net.cpp
+line 1178
+remove urls, leave null option
+testnet below as well
+
+#net.cpp remove hard coded hex ips
+line 46-1302 ?
+
+#main.cpp change block difficulty, coin reward etc
+
+#main.h line 55 change max tokens ie 21 million
+	line 58 change maturity time 
+
+#main.cpp change the epoch time for testnet and mainnet 
+change line 2800
+
+#main.cpp remove merkle root line# 2809
+
+compile to get new merkle
+make -f makefile.unix
+
+
+##After compilation is complete, we get our merkle by running the command
+##yourcoind replacing "yourcoin" with your coin name( in src folder)
+./yourcoind
+
+
+Actually, it will give a core dump, which is good, because our merkle root is now available in our debug file...
+Go to hidden files in home directory, control h will open in linux home window
+
+the file name is ./yourcoin/debug.log
+open with editor
+the last hash is the merkle hash
+place in main.cpp line 2809
+
+
+#main.cpp
+change line 2804 , change to true to find genesis block (line did not exist?? appears to have auto gen implemented)
+
+remove genesis block hex from testnet line 2749 and main net line 38
+
+
+compile again
+makefile -f makefile.unix
+
+now..add this below line 2802 in main.cpp
+change false to true when mining genesis
+
+if (false && block.GetHash() != hashGenesisBlock)
+        {
+            printf("Searching for genesis block...\n");
+            // This will figure out a valid hash and Nonce if you're
+            // creating a different genesis block:
+            uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
+            uint256 thash;
+            char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+ 
+            loop
+            {
+#if defined(USE_SSE2)
+                // Detection would work, but in cases where we KNOW it always has SSE2,
+                // it is faster to use directly than to use a function pointer or conditional.
+#if defined(_M_X64) || defined(__x86_64__) || defined(_M_AMD64) || (defined(MAC_OSX) && defined(__i386__))
+                // Always SSE2: x86_64 or Intel MacOS X
+                scrypt_1024_1_1_256_sp_sse2(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
+#else
+                // Detect SSE2: 32bit x86 Linux or Windows
+                scrypt_1024_1_1_256_sp(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
+#endif
+#else
+                // Generic scrypt
+                scrypt_1024_1_1_256_sp_generic(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
+#endif
+                if (thash <= hashTarget)
+                    break;
+                if ((block.nNonce & 0xFFF) == 0)
+                {
+                    printf("nonce %08X: hash = %s (target = %s)\n", block.nNonce, thash.ToString().c_str(), hashTarget.ToString().c_str());
+                }
+                ++block.nNonce;
+                if (block.nNonce == 0)
+                {
+                    printf("NONCE WRAPPED, incrementing time\n");
+                    ++block.nTime;
+                }
+            }
+            printf("block.nTime = %u \n", block.nTime);
+            printf("block.nNonce = %u \n", block.nNonce);
+            printf("block.GetHash = %s\n", block.GetHash().ToString().c_str());
+        }
+
+
+##recompile again
+make -f makefile.unix to recompile main.cpp
+
+then run yourcoind -testnet to generate genesis block for testnet
+it will fail, then we go into hidden folder again ~./yourcoind/testnet3/debug.log
+
+you will wait for up to 15-20 min to find hash
+
+2023-10-06 13:15:48 block.nTime = 1696587228
+2023-10-06 13:15:48 block.nNonce = 386320780
+2023-10-06 13:15:48 block.GetHash = 8295321627ed3063e872aadc24995090d2085ecb43794ec3933e0bcd332a6db4
+
+
+##if you need to redo this later, delete ~/.yourcoinFolder
+
+grab the nonce and add to main.cpp testnet nonce line 2801 386320780
+grab the hash and add to line 2749
+
+compile again
+makefile -f makefile.unix
+
+
+run yourcoind again without testnet flags
+line 2796 add unix
+line 38 add hash 
+turn line 2803 to false again
+
+block.nTime = 1696587231
+2023-10-06 13:34:53 block.nNonce = 2087496204
+2023-10-06 13:34:53 block.GetHash = 29aa0fb842da2afb38951b48a74ae9637f0c9ec4affe8625d059501ffc816d96
+
+
+clean up /yourcoin/src/checkpoints.cpp
+remove all checkpoints at line 39 except for first. Replace the hash with genesis hash, and change the height to 0
+
+line 42 checkpoints.cpp replace unix time with mainnet block.ntime at line 2794  
+
+change number txs line 43 to 0
+change estimated txs to low number line 44
+
+same for testnet line 2749 hash to checkpoints.cpp line 50 
+line for unix main.cpp line 2801 to checkpoints.cpp line 54 
+
+
+
+##let's compile the interface
+
+go to main folder of coin
+
+
+type: qmake
+
+you will see:
+Project MESSAGE: Building with UPNP support
+Removed plural forms as the target language has less forms.
+If this sounds wrong, possibly the target language is not set or recognized.
+Removed plural forms as the target language has less forms.
+If this sounds wrong, possibly the target language is not set or recognized.
+Removed plural forms as the target language has less forms.
+If this sounds wrong, possibly the target language is not set or recognized.
+Removed plural forms as the target language has less forms.
+If this sounds wrong, possibly the target language is not set or recognized.
+
+
+type make
+
+after compilation is finished, you will se yourcoin-qt file in your directory
+
+open yourcoin-qt -testnet
+and also yourcoin-qt without flags to test
+
+##setting up first mining node to connect to
