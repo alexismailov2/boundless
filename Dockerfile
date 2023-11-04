@@ -40,6 +40,8 @@ RUN ../dist/configure --prefix=/usr --enable-cxx \
 # Back to root directory
 WORKDIR ../../
 
+RUN chmod +x src/leveldb/build_detect_platform
+
 # Build the software
 RUN cd src \
     && make -f makefile.unix \
