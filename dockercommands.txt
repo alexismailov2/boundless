@@ -10,4 +10,28 @@ docker rm my-boundless-container
 #run the container at port 3343
 docker run -it -p 3343:3343 --name my-boundless-container my-boundless-image
 
-If you use a tag other than latest for your images, make sure to use the correct tag when running docker build and docker run. For example, if you tag your image as my-boundless-image:v2, you should also use this tag when running the container.
+If you use a tag other than latest for your images, make sure to use the correct tag when
+running docker build and docker run. For example, if you tag your image as my-boundless-image:v2,
+you should also use this tag when running the container.
+
+
+When you start a Docker container using the -it flag, Docker attaches your terminal input and output to the container's standard input and output. This allows you to interact with the container's shell directly as if you were inside it. The -i flag stands for interactive, and -t allocates a pseudo-TTY, which is what makes it seem like you are inside the container.
+
+For example, when you run:
+
+sh
+Copy code
+docker run -it --name my-boundless-container my-boundless-image
+You will be "inside" the container in the sense that your terminal is connected to the bash shell of the container due to the CMD ["/bin/bash"] instruction in your Dockerfile. If you exit the shell (by typing exit or pressing Ctrl+D), you will leave the container's shell, and the container will stop since its main process (bash) has ended.
+
+If you want to start the container and not immediately be inside it, you would omit the -it flags and run it in detached mode using -d:
+
+sh
+Copy code
+docker run -d --name my-boundless-container my-boundless-image
+Then, if you want to attach to the container later, you can use:
+
+sh
+Copy code
+docker exec -it my-boundless-container /bin/bash
+This command will give you an interactive shell inside the container even though it was started in detached mode.
