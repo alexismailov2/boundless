@@ -23,8 +23,10 @@ RUN add-apt-repository -y ppa:ubuntuhandbook1/ppa \
 COPY . .
 
 # Download libdb4.8 sources
-RUN wget http://download.oracle.com/berkeley-db/db-4.8.30.zip \
-    && unzip db-4.8.30.zip
+
+RUN wget -O db-4.8.30.zip http://download.oracle.com/berkeley-db/db-4.8.30.zip \
+    && unzip -o db-4.8.30.zip \
+    && rm db-4.8.30.zip
 
 # Step into libdb build directory
 WORKDIR db-4.8.30/build_unix
