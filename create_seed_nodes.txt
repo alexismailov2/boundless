@@ -1,0 +1,5 @@
+#modify db.h Line19: 
+#getRequireHeight , change to height of block desired to be a dns seeder
+
+#main.cpp line 403? or check older video
+#Fix hard coded seeds & Fix peer magix
