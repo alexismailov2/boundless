@@ -85,3 +85,22 @@ Dockerfile
 Copy code
 COPY path/to/your/local/config.conf /path/to/your/config.conf
 Make sure the path/to/your/local/config.conf is relative to the build context (the directory where you run docker build).
+To ensure your Docker container keeps running after system reboots or restarts, you can use the --restart flag when you run a container. This flag can be set to different policies:
+
+no: Do not automatically restart the container. (the default)
+on-failure: Restart the container if it exits due to an error, which manifests as a non-zero exit code.
+always: Always restart the container regardless of the exit status. When you specify always, the Docker daemon will try to restart the container indefinitely. The container will also always start on daemon startup, regardless of the current state of the container.
+unless-stopped: Similar to always, except that when the container is stopped (manually or otherwise), it is not restarted even after Docker daemon restarts.
+Here is an example of how to run a container with a restart policy:
+
+sh
+Copy code
+docker run -d --name my-boundless --restart always my-boundless-image
+This command will run your container in detached mode (-d) with the --restart always policy, ensuring it will be restarted if it stops or if the Docker daemon restarts for any reason, such as after a system reboot.
+
+If your container is already running and you want to update its restart policy, you can use the docker update command:
+
+sh
+Copy code
+docker update --restart always my-boundless
+This will apply the restart policy to your already running container.
