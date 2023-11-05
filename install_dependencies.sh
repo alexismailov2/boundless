@@ -10,7 +10,7 @@ sudo apt-get install -y git build-essential libtool libdb++-dev autotools-dev au
 
 # Download libdb4.8 sources
 wget http://download.oracle.com/berkeley-db/db-4.8.30.zip
-unzip db-4.8.30.zip
+sudo unzip db-4.8.30.zip
 
 # Step into libdb build directory
 cd db-4.8.30/build_unix
