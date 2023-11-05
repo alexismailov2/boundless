@@ -17,7 +17,8 @@ cd db-4.8.30/build_unix
 
 # Fix overwrite of gcc builtin
 sudo sed -i 's/__atomic_compare_exchange/db_atomic_compare_exchange_db/g' ../dbinc/atomic.h
-
+cd ~/boundless/src
+chmod +x ./leveldb/build_detect_platform
 
 #~/.boundless/boundless.conf
 #addnode=167.172.129.199
