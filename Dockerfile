@@ -47,6 +47,6 @@ RUN cd src \
     && make -f makefile.unix \
     && cd .. \
     && qmake && make
-
+EXPOSE 3343
 # Set the default command for the container
 CMD ["/bin/bash"]
