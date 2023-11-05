@@ -1,0 +1,13 @@
+#build container
+docker build -t my-boundless-image .
+
+#stop container
+docker stop my-boundless-container
+
+#remove container
+docker rm my-boundless-container
+
+#run the container at port 3343
+docker run -it -p 3343:3343 --name my-boundless-container my-boundless-image
+
+If you use a tag other than latest for your images, make sure to use the correct tag when running docker build and docker run. For example, if you tag your image as my-boundless-image:v2, you should also use this tag when running the container.
