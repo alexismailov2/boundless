@@ -2,10 +2,13 @@
 docker build -t my-boundless-image .
 
 #stop container
-docker stop my-boundless-container
+docker stop my-boundless-image
+
+#docker start
+docker start my-boundless-image
 
 #remove container
-docker rm my-boundless-container
+docker rm my-boundless-image
 
 #run the container at port 3343
 docker run -it -p 3343:3343 --name my-boundless-container my-boundless-image
