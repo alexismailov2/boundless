@@ -1,4 +1,4 @@
-# Start with the Ubuntu 16.04 base image
+# Start with the Ubuntu 22.04 base image
 FROM ubuntu:22.04
 
 # Set the working directory for building
@@ -23,7 +23,6 @@ RUN add-apt-repository -y ppa:ubuntuhandbook1/ppa \
 COPY . .
 
 # Download libdb4.8 sources
-
 RUN wget -O db-4.8.30.zip http://download.oracle.com/berkeley-db/db-4.8.30.zip \
     && unzip -o db-4.8.30.zip \
     && rm db-4.8.30.zip
@@ -39,16 +38,23 @@ RUN ../dist/configure --prefix=/usr --enable-cxx \
     && make \
     && make install
 
-# Back to root directory
-WORKDIR ../../
-
-RUN chmod +x src/leveldb/build_detect_platform
+# Back to boundless directory
+WORKDIR /boundless
 
 # Build the software
-RUN cd src \
+RUN chmod +x src/leveldb/build_detect_platform \
+    && cd src \
     && make -f makefile.unix \
     && cd .. \
     && qmake && make
+
+# Copy the boundless.conf configuration file to the .boundless directory
+# Ensure the directory exists
+RUN mkdir -p /root/.boundless
+COPY boundless.conf /root/.boundless/
+
+# Expose the port used by the daemon
 EXPOSE 3343
-# Set the default command for the container
-CMD ["/bin/bash"]
+
+# Set the default command for the container to run the daemon
+CMD ["./src/boundlessd", "-server"]
