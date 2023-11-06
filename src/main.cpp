@@ -1096,7 +1096,7 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 }
 
 static const int64 nTargetTimespan = 7 * 24 * 60 * 60; // Boundless: 7 days
-static const int64 nTargetSpacing = 10 * 60; // Boundless: 10  minutes
+static const int64 nTargetSpacing = 3 * 60; // Boundless: 3  minutes
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
