@@ -1,0 +1,106 @@
+#build container
+docker build -t my-boundless-image .
+
+#stop container
+docker stop my-boundless-container
+
+#remove container
+docker rm my-boundless-container
+
+#run the container at port 3343
+docker run -it -p 3343:3343 --name my-boundless-container my-boundless-image
+
+If you use a tag other than latest for your images, make sure to use the correct tag when
+running docker build and docker run. For example, if you tag your image as my-boundless-image:v2,
+you should also use this tag when running the container.
+
+
+When you start a Docker container using the -it flag, Docker attaches your terminal input and output to the container's standard input and output. This allows you to interact with the container's shell directly as if you were inside it. The -i flag stands for interactive, and -t allocates a pseudo-TTY, which is what makes it seem like you are inside the container.
+
+For example, when you run:
+
+sh
+Copy code
+docker run -it --name my-boundless-container my-boundless-image
+You will be "inside" the container in the sense that your terminal is connected to the bash shell of the container due to the CMD ["/bin/bash"] instruction in your Dockerfile. If you exit the shell (by typing exit or pressing Ctrl+D), you will leave the container's shell, and the container will stop since its main process (bash) has ended.
+
+If you want to start the container and not immediately be inside it, you would omit the -it flags and run it in detached mode using -d:
+
+sh
+Copy code
+docker run -d --name my-boundless-container my-boundless-image
+Then, if you want to attach to the container later, you can use:
+
+sh
+Copy code
+docker exec -it my-boundless-container /bin/bash
+This command will give you an interactive shell inside the container even though it was started in detached mode.
+
+
+Creating a .conf file within a Docker container or as part of the image build process can be achieved in several ways. Here are a few methods:
+
+1. Creating a .conf File in the Dockerfile
+You can use the RUN command with echo or a heredoc to create a .conf file directly within your Dockerfile:
+
+Dockerfile
+Copy code
+RUN echo "configuration settings" > /path/to/your/config.conf
+Or using a heredoc for multi-line content:
+
+Dockerfile
+Copy code
+RUN bash -c 'cat <<EOF > /path/to/your/config.conf
+line 1 of config
+line 2 of config
+EOF'
+2. Copying a .conf File from Your Host
+If you have a .conf file on your host machine, you can simply copy it into the image when building:
+
+Dockerfile
+Copy code
+COPY path/to/your/local/config.conf /path/to/your/config.conf
+Make sure the path/to/your/local/config.conf is relative to the build context (the directory where you run docker build).
+
+
+Creating a .conf file within a Docker container or as part of the image build process can be achieved in several ways. Here are a few methods:
+
+1. Creating a .conf File in the Dockerfile
+You can use the RUN command with echo or a heredoc to create a .conf file directly within your Dockerfile:
+
+Dockerfile
+Copy code
+RUN echo "configuration settings" > /path/to/your/config.conf
+Or using a heredoc for multi-line content:
+
+Dockerfile
+Copy code
+RUN bash -c 'cat <<EOF > /path/to/your/config.conf
+line 1 of config
+line 2 of config
+EOF'
+2. Copying a .conf File from Your Host
+If you have a .conf file on your host machine, you can simply copy it into the image when building:
+
+Dockerfile
+Copy code
+COPY path/to/your/local/config.conf /path/to/your/config.conf
+Make sure the path/to/your/local/config.conf is relative to the build context (the directory where you run docker build).
+To ensure your Docker container keeps running after system reboots or restarts, you can use the --restart flag when you run a container. This flag can be set to different policies:
+
+no: Do not automatically restart the container. (the default)
+on-failure: Restart the container if it exits due to an error, which manifests as a non-zero exit code.
+always: Always restart the container regardless of the exit status. When you specify always, the Docker daemon will try to restart the container indefinitely. The container will also always start on daemon startup, regardless of the current state of the container.
+unless-stopped: Similar to always, except that when the container is stopped (manually or otherwise), it is not restarted even after Docker daemon restarts.
+Here is an example of how to run a container with a restart policy:
+
+sh
+Copy code
+docker run -d --name my-boundless --restart always my-boundless-image
+This command will run your container in detached mode (-d) with the --restart always policy, ensuring it will be restarted if it stops or if the Docker daemon restarts for any reason, such as after a system reboot.
+
+If your container is already running and you want to update its restart policy, you can use the docker update command:
+
+sh
+Copy code
+docker update --restart always my-boundless
+This will apply the restart policy to your already running container.
