@@ -1094,10 +1094,9 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 
     return nSubsidy + nFees;
 }
-
-static const int64 nTargetTimespan = 7 * 24 * 60 * 60; // Boundless: 7 days
-static const int64 nTargetSpacing = 3 * 60; // Boundless: 3  minutes
-static const int64 nInterval = nTargetTimespan / nTargetSpacing;
+static const int64 nTargetTimespan = 24 * 60 * 60; // Adjusted to 1 day
+static const int64 nTargetSpacing = 3 * 60; // Stays at 3 minutes
+static const int64 nInterval = nTargetTimespan / nTargetSpacing; // New interval with updated timespan
 
 //
 // minimum amount of work that could possibly be required nTime after
