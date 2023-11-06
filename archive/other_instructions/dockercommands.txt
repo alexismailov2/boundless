@@ -12,6 +12,8 @@ docker rm my-boundless-image
 
 #run the container at port 3343
 docker run -it --name=my-boundless -p 3343:3343 my-boundless-image
+docker run -d --name=my-boundless -p 3343:3343 --restart always my-boundless-image
+
 
 If you use a tag other than latest for your images, make sure to use the correct tag when
 running docker build and docker run. For example, if you tag your image as my-boundless-image:v2,
