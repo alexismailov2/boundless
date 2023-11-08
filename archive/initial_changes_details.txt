@@ -29,7 +29,7 @@ PUBKEY_ADDRESS_TEST = 0x73,//s
 
 ####
 
-generate & change the alertkeys and genesis hexes
+generate & change the alertkeys and genesis hexes & keypairs
 openssl ecparam -genkey -name secp256k1 -out alertkey.pem
 openssl ec -in alertkey.pem -text > alertkey.hex
 openssl ecparam -genkey -name secp256k1 -out testnetalert.pem
