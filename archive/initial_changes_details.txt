@@ -15,7 +15,7 @@ find . -type f -print0 | xargs -0 sed -i 's/LTC/BLS/g'
 
 make -f makefile.unix
 ####
-
+change default ports for project different than litecoin's & bitcoin's
 find . -type f -print0 | xargs -0 sed -i 's/9333/3343/g'
 find . -type f -print0 | xargs -0 sed -i 's/9332/3342/g'  ##I'm not sure what i changed to, but this should be fine for this
 
