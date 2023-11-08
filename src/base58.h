@@ -275,7 +275,7 @@ public:
     {
         PUBKEY_ADDRESS = 0x53, // Boundless addresses start with S
         SCRIPT_ADDRESS = 5,
-        PUBKEY_ADDRESS_TEST = 0x4C,//L
+        PUBKEY_ADDRESS_TEST = 0x73,//L
         SCRIPT_ADDRESS_TEST = 196,
     };
 
