@@ -1,0 +1,43 @@
+/boundless/src/rpcrawtransaction.cpp
+line 242
+change
+const CScriptID& hash = boost::get<const CScriptID&>(address);
+to
+const CScriptID& hash = boost::get<CScriptID>(address);
+###
+rename everything
+
+find . -type f -print0 | xargs -0 sed -i 's/litecoin/boundless/g'
+find . -type f -print0 | xargs -0 sed -i 's/Litecoin/Boundless/g'
+find . -type f -print0 | xargs -0 sed -i 's/LiteCoin/BoundLess/g'
+find . -type f -print0 | xargs -0 sed -i 's/LITECOIN/BOUNDLESS/g'
+find . -type f -print0 | xargs -0 sed -i 's/LTC/BLS/g'
+
+make -f makefile.unix
+####
+
+find . -type f -print0 | xargs -0 sed -i 's/9333/3343/g'
+find . -type f -print0 | xargs -0 sed -i 's/9332/3342/g'  ##I'm not sure what i changed to, but this should be fine for this
+
+###
+Change the address "space" of boundless addresses
+/boundless/src/base58.h
+line 275 we changed to below:
+PUBKEY_ADDRESS = 0x53, // Boundless addresses start with S
+line 278 testnet
+PUBKEY_ADDRESS_TEST = 0x73,//s
+
+
+
+
+ 
+openssl ecparam -genkey -name secp256k1 -out alertkey.pem
+openssl ec -in alertkey.pem -text > alertkey.hex
+openssl ecparam -genkey -name secp256k1 -out testnetalert.pem
+openssl ec -in testnetalert.pem -text > testnetalert.hex
+openssl ecparam -genkey -name secp256k1 -out genesiscoinbase.pem
+openssl ec -in testnetalert.pem -text > genesiscoinbase.hex
+
+##
+
+
