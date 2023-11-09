@@ -87,3 +87,6 @@ line 2809 remove the merkle root hex except for 0x
 compile make -f makefile.unix
 then run ./boundlessd which will give error
 but we got new merkle root hex located at ~/.boundless/debug.log
+the last logged entry is our valid merkle hash
+copy and paste into main.cpp line 2849
+### note: we had to get this code block and put into litecoin, since they didn't need to reproduce and new merkle, and removed this from the litecoin 
