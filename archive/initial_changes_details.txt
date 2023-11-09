@@ -115,3 +115,14 @@ line 2795 nonce
 line 38 GetHash
 
 ///turn off true flad at line 2802 from above, so we do not repeat genesis block being produced.
+
+
+##Change Checkpoints.cpp
+line 38, we remove all previous checkpoints of litecoin, (checkpoints are used to reduce ddos attacks etc and have referencable checkpoints)
+we start instead at block 0 and our newly created genesis block hash
+   static MapCheckpoints mapCheckpoints =
+        boost::assign::map_list_of
+        (  0, uint256("0x29aa0fb842da2afb38951b48a74ae9637f0c9ec4affe8625d059501ffc816d96"))
+        ;
+
+line 40-46 we copy these values from main.cpp, line 2973 for our  block.nTime  = 1696587231; and copy to checkpoint line 42
