@@ -24,6 +24,7 @@ Change the address "space" of boundless addresses
 /boundless/src/base58.h
 line 275 we changed to below:
 PUBKEY_ADDRESS = 0x53, // Boundless addresses start with S --- update: i realized this in wrong, and i will fix for production. doesnt badly affect atm
+## here is the list of prefixes https://en.bitcoin.it/wiki/List_of_address_prefixes
 line 278 testnet
 PUBKEY_ADDRESS_TEST = 0x73,//s
 
