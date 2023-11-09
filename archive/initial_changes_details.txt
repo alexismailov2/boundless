@@ -30,16 +30,52 @@ PUBKEY_ADDRESS_TEST = 0x73,//s
 ####
 go to home folder or desktop
 generate & change the alertkeys and genesis hexes & keypairs
+type:
 openssl ecparam -genkey -name secp256k1 -out alertkey.pem
 openssl ec -in alertkey.pem -text > alertkey.hex
-
-this generates our alert key hex. type cat alertkey.hex to get our publickey 
-replace at line 23 alert.cpp
-
 openssl ecparam -genkey -name secp256k1 -out testnetalert.pem
 openssl ec -in testnetalert.pem -text > testnetalert.hex
 openssl ecparam -genkey -name secp256k1 -out genesiscoinbase.pem
 openssl ec -in testnetalert.pem -text > genesiscoinbase.hex
 
+this generates our alert key hex.
+#### type:
+cat alertkey.hex to get our publickey 
+replace at line 22 and 23 for main and testnet public keys in alert.cpp
 
+### type:
+cat genesiscoinbase.hex to get our coinbase hex
+main.cpp line 2788 replace hex
 
+##peer magic
+main.cpp
+line 2745 change last digit of hex for each line : example 0xF1 becomes 0xFa   etc...
+and line 3082 same thing for mainnet
+
+##removing hard coded seed nodes and ip addresses
+net.cpp
+line 1176/78 remove all seed node domains and leave {NULL, NULL}
+line 1228 remove all hard coded hexes of ip addresses. do not leave blank, so we put 0x0 to avoid compilation issues
+
+##change coin parameters
+main.cpp
+line 1090 change/or keep starting reward to 50 BLS coins per block
+line 1093 determines the halving schedule, how often the block reward is cut in half
+line 1098 determines how quickly the difficulty adjustment occurs
+line 1099 determines how quickly a block should be found - 3 minutes for Boundless
+
+##chnge max money
+main.h
+line 55 kept at 84 million 
+line 58 coin maturity - how many blocks have past before coins can be spent - left at 100
+line 627 transaction priority /small tx free/ priority? https://youtu.be/RPgpedUw5W4?si=f3e2F930id5xY4G7&t=263
+
+#change in main.cpp
+main.cpp
+line 2788 change to same number as line 1090 above
+line 2882 change news headline to current news
+##changing the block.ntime 
+type: date +%s 
+change line 2794 mainnet block.ntime
+once more for date +%s
+line 2800 for test
