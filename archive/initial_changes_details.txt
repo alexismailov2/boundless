@@ -89,4 +89,6 @@ then run ./boundlessd which will give error
 but we got new merkle root hex located at ~/.boundless/debug.log
 the last logged entry is our valid merkle hash
 copy and paste into main.cpp line 2849
-### note: we had to get this code block and put into litecoin, since they didn't need to reproduce and new merkle, and removed this from the litecoin 
+### note: we had to get this code block and put into litecoin at line 2802 after if testnet statement, since they didn't need to reproduce and new merkle, and removed this from the litecoin https://pastebin.com/du2XdxCC
+
+
