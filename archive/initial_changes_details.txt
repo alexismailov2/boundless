@@ -79,3 +79,9 @@ type: date +%s
 change line 2794 mainnet block.ntime
 once more for date +%s
 line 2800 for test
+
+##merkle root - stay in main.cpp
+line 2809 remove the merkle root hex except for 0x
+
+compile make -f makefile.unix to get new merkle root hex
+
