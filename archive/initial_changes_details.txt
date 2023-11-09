@@ -93,5 +93,10 @@ copy and paste into main.cpp line 2849
 
 ### producing genesis block
 -remove testnet hex from line 2748 and mainnet genesis hex from line 38
-compile
+compile again
+make -f makefile.unix
 
+genesis testnet
+type:
+./boundlessd -testnet
+open ~/.boundless/testnet3/debug.log to find testnet genesis hex
