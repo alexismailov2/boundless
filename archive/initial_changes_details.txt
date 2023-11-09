@@ -23,7 +23,7 @@ find . -type f -print0 | xargs -0 sed -i 's/9332/3342/g'  ##I'm not sure what i 
 Change the address "space" of boundless addresses
 /boundless/src/base58.h
 line 275 we changed to below:
-PUBKEY_ADDRESS = 0x53, // Boundless addresses start with S
+PUBKEY_ADDRESS = 0x53, // Boundless addresses start with S --- update: i realized this in wrong, and i will fix for production. doesnt badly affect atm
 line 278 testnet
 PUBKEY_ADDRESS_TEST = 0x73,//s
 
