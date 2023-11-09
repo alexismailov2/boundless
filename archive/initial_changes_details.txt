@@ -91,4 +91,7 @@ the last logged entry is our valid merkle hash
 copy and paste into main.cpp line 2849
 ### note: we had to get this code block and put into litecoin at line 2802 after if testnet statement (they didn't need to reproduce and new merkle, and removed this from the litecoin). The boolean condition determines whether to produce genesis. if (false && block.GetHash() != hashGenesisBlock).... if changed to true, we get out genesis block.. see pastebin reference https://pastebin.com/du2XdxCC
 
+### producing genesis block
+-remove testnet hex from line 2748 and mainnet genesis hex from line 38
+compile
 
