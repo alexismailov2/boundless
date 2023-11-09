@@ -126,3 +126,15 @@ we start instead at block 0 and our newly created genesis block hash
         ;
 
 line 40-46 we copy these values from main.cpp, line 2973 for our  block.nTime  = 1696587231; and copy to checkpoint line 42
+we modify next lines to 0 blocks, and avg number of txs since checkpoint guess..
+ static const CCheckpointData data = {
+        &mapCheckpoints,
+        1696587231, // * UNIX timestamp of last checkpoint block
+        0,    // * total number of transactions between genesis and last checkpoint
+                    //   (the tx=... number in the SetBestChain debug.log lines)
+        7.0     // * estimated number of transactions per day after checkpoint
+    };
+
+then we do our testnet as well
+line 48-57 checkpoints.cpp nTime from main.cpp 2799, and then rest is same as mainnet
+
