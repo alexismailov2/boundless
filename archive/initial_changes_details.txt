@@ -100,3 +100,18 @@ genesis testnet
 type:
 ./boundlessd -testnet
 open ~/.boundless/testnet3/debug.log to find testnet genesis hex
+go to bottom of file and grab block.nNonce at first found block
+copy and paste at line 2800
+go back to debug.log and copy block.GetHash
+paste at line 2748
+
+compile again
+
+type ./boundlessd   ///without testnet flag
+
+go to ~/.boundless/debug.log to get results
+find same info as above nNonce, GetHash
+line 2795 nonce
+line 38 GetHash
+
+///turn off true flad at line 2802 from above, so we do not repeat genesis block being produced.
