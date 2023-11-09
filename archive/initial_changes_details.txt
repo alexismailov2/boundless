@@ -28,11 +28,12 @@ line 278 testnet
 PUBKEY_ADDRESS_TEST = 0x73,//s
 
 ####
-
+go to home folder or desktop
 generate & change the alertkeys and genesis hexes & keypairs
 openssl ecparam -genkey -name secp256k1 -out alertkey.pem
 openssl ec -in alertkey.pem -text > alertkey.hex
 
+this generates our alert key hex. type cat alertkey.hex to get our publickey 
 replace at line 23 alert.cpp
 
 openssl ecparam -genkey -name secp256k1 -out testnetalert.pem
