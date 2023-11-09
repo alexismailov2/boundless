@@ -138,3 +138,13 @@ we modify next lines to 0 blocks, and avg number of txs since checkpoint guess..
 then we do our testnet as well
 line 48-57 checkpoints.cpp nTime from main.cpp 2799, and then rest is same as mainnet
 testnet hash main 2748 and copy to checkpoints.cpp line 50
+
+
+compile QT
+..
+qmake
+make
+
+after QT compiles we can use
+./boundless-qt -testnet
+or ./boundless-qt
