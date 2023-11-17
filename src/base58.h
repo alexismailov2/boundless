@@ -27,7 +27,8 @@
 static const char* pszBase58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 // Encode a byte sequence as a base58-encoded string
-inline std::string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend)
+std::string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend);
+#if 0
 {
     CAutoBN_CTX pctx;
     CBigNum bn58 = 58;
@@ -35,7 +36,6 @@ inline std::string EncodeBase58(const unsigned char* pbegin, const unsigned char
 
     // Convert big endian data to little endian
     // Extra zero at the end make sure bignum will interpret as a positive number
-    assert(pbegin != pend); // Fixing pend-pbegin+1 workaround
     std::vector<unsigned char> vchTmp(pend-pbegin+1, 0);
     reverse_copy(pbegin, pend, vchTmp.begin());
 
@@ -67,7 +67,7 @@ inline std::string EncodeBase58(const unsigned char* pbegin, const unsigned char
     reverse(str.begin(), str.end());
     return str;
 }
-
+#endif
 // Encode a byte vector as a base58-encoded string
 inline std::string EncodeBase58(const std::vector<unsigned char>& vch)
 {
@@ -179,7 +179,7 @@ class CBase58Data
 {
 protected:
     // the version byte
-    unsigned char nVersion;
+    unsigned char nVersion{};
 
     // the actually encoded data
     typedef std::vector<unsigned char, zero_after_free_allocator<unsigned char> > vector_uchar;
@@ -187,8 +187,6 @@ protected:
 
     CBase58Data()
     {
-        nVersion = 0;
-        vchData.clear();
     }
 
     void SetData(int nVersionIn, const void* pdata, size_t nSize)
