@@ -4554,12 +4554,12 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
     {
         struct unnamed2
         {
-            int nVersion;
+            int nVersion{};
             uint256 hashPrevBlock;
             uint256 hashMerkleRoot;
-            unsigned int nTime;
-            unsigned int nBits;
-            unsigned int nNonce;
+            unsigned int nTime{};
+            unsigned int nBits{};
+            unsigned int nNonce{};
         }
         block;
         unsigned char pchPadding0[64];
@@ -4567,7 +4567,8 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
         unsigned char pchPadding1[64];
     }
     tmp;
-    memset(&tmp, 0, sizeof(tmp));
+    memset(&tmp.pchPadding0, 0, sizeof(tmp.pchPadding0));
+    memset(&tmp.pchPadding1, 0, sizeof(tmp.pchPadding1));
 
     tmp.block.nVersion       = pblock->nVersion;
     tmp.block.hashPrevBlock  = pblock->hashPrevBlock;
