@@ -45,7 +45,7 @@ std::string EncodeBase58(const std::vector<unsigned char>& vch)
   return EncodeBase58(&vch[0], &vch[0] + vch.size());
 }
 
-std::string CBase58Data::ToString() const;
+std::string CBase58Data::ToString() const
 {
   std::vector<unsigned char> vch(1, nVersion);
   vch.insert(vch.end(), vchData.begin(), vchData.end());
