@@ -1,5 +1,3 @@
-#pragma once
-
 #include "base58.h"
 
 std::string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend)
@@ -40,4 +38,16 @@ std::string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend)
   // Convert little endian std::string to big endian
   reverse(str.begin(), str.end());
   return str;
+}
+
+std::string EncodeBase58(const std::vector<unsigned char>& vch)
+{
+  return EncodeBase58(&vch[0], &vch[0] + vch.size());
+}
+
+std::string CBase58Data::ToString() const;
+{
+  std::vector<unsigned char> vch(1, nVersion);
+  vch.insert(vch.end(), vchData.begin(), vchData.end());
+  return EncodeBase58Check(vch);
 }

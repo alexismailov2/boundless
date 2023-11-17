@@ -69,11 +69,12 @@ std::string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend)
 }
 #endif
 // Encode a byte vector as a base58-encoded string
-inline std::string EncodeBase58(const std::vector<unsigned char>& vch)
+std::string EncodeBase58(const std::vector<unsigned char>& vch);
+#if 0
 {
     return EncodeBase58(&vch[0], &vch[0] + vch.size());
 }
-
+#endif
 // Decode a base58-encoded string psz into byte vector vchRet
 // returns true if decoding is successful
 inline bool DecodeBase58(const char* psz, std::vector<unsigned char>& vchRet)
@@ -226,13 +227,14 @@ public:
         return SetString(str.c_str());
     }
 
-    std::string ToString() const
+    std::string ToString() const;
+#if 0
     {
         std::vector<unsigned char> vch(1, nVersion);
         vch.insert(vch.end(), vchData.begin(), vchData.end());
         return EncodeBase58Check(vch);
     }
-
+#endif
     int CompareTo(const CBase58Data& b58) const
     {
         if (nVersion < b58.nVersion) return -1;
