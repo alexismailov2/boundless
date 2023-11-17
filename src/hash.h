@@ -159,7 +159,7 @@ inline uint160 Hash160(const T1 pbegin, const T1 pend)
     uint256 hash1;
     SHA256((pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]), (unsigned char*)&hash1);
     uint160 hash2;
-# ifndef OPENSSL_NO_DEPRECATED
+#if 0
     RIPEMD160((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
 #else
     uint32_t hash2_size = 0;
