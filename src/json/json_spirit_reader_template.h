@@ -416,6 +416,7 @@ namespace json_spirit
             definition( const Json_grammer& self )
             {
                 using namespace spirit_namespace;
+                using namespace boost::placeholders;
 
                 typedef typename Value_type::String_type::value_type Char_type;
 
