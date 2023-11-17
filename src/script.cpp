@@ -793,8 +793,17 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         return false;
                     valtype& vch = stacktop(-1);
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
-                    if (opcode == OP_RIPEMD160)
-                        RIPEMD160(&vch[0], vch.size(), &vchHash[0]);
+                    if (opcode == OP_RIPEMD160) {
+# ifndef OPENSSL_NO_DEPRECATED
+                      RIPEMD160(&vch[0], vch.size(), &vchHash[0]);
+#else
+                      uint32_t vchHash_size = 0;
+                      EVP_Digest((unsigned char*)&vch[0], vch.size(),
+                                 (unsigned char*)&vchHash[0],
+                                 &vchHash_size,
+                                 EVP_ripemd160(), nullptr);
+#endif
+                    }
                     else if (opcode == OP_SHA1)
                         SHA1(&vch[0], vch.size(), &vchHash[0]);
                     else if (opcode == OP_SHA256)
