@@ -8,9 +8,14 @@
 #include "uint256.h"
 #include "serialize.h"
 
-#include <openssl/sha.h>
+#include <openssl/evp.h>
 #include <openssl/ripemd.h>
+#include <openssl/sha.h>
 #include <vector>
+
+#ifndef OPENSSL_NO_DEPRECATED
+#define OPENSSL_NO_DEPRECATED
+#endif
 
 template<typename T1>
 inline uint256 Hash(const T1 pbegin, const T1 pend)
@@ -26,29 +31,51 @@ inline uint256 Hash(const T1 pbegin, const T1 pend)
 class CHashWriter
 {
 private:
+#ifndef OPENSSL_NO_DEPRECATED
     SHA256_CTX ctx;
-
+#else
+    EVP_MD_CTX* _ctx;
+#endif
 public:
     int nType;
     int nVersion;
 
     void Init() {
+#ifndef OPENSSL_NO_DEPRECATED
         SHA256_Init(&ctx);
+#else
+        EVP_DigestInit_ex(_ctx, EVP_sha256(), nullptr);
+#endif
     }
 
-    CHashWriter(int nTypeIn, int nVersionIn) : nType(nTypeIn), nVersion(nVersionIn) {
+    CHashWriter(int nTypeIn, int nVersionIn)
+        : nType(nTypeIn)
+        , nVersion(nVersionIn)
+    {
         Init();
     }
 
+    ~CHashWriter() {
+        EVP_MD_CTX_destroy(_ctx);
+    }
     CHashWriter& write(const char *pch, size_t size) {
+# ifndef OPENSSL_NO_DEPRECATED
         SHA256_Update(&ctx, pch, size);
+#else
+        EVP_DigestUpdate(_ctx, pch, size);
+#endif
         return (*this);
     }
 
     // invalidates the object
     uint256 GetHash() {
+# ifndef OPENSSL_NO_DEPRECATED
         uint256 hash1;
         SHA256_Final((unsigned char*)&hash1, &ctx);
+#else
+        uint256 hash1;
+        EVP_DigestFinal_ex(_ctx, (unsigned char*)&hash1, nullptr);
+#endif
         uint256 hash2;
         SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
         return hash2;
@@ -69,11 +96,20 @@ inline uint256 Hash(const T1 p1begin, const T1 p1end,
 {
     static unsigned char pblank[1];
     uint256 hash1;
+# ifndef OPENSSL_NO_DEPRECATED
     SHA256_CTX ctx;
     SHA256_Init(&ctx);
     SHA256_Update(&ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
     SHA256_Update(&ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
     SHA256_Final((unsigned char*)&hash1, &ctx);
+#else
+    auto md_ctx = EVP_MD_CTX_create();
+    EVP_DigestInit_ex(md_ctx, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(md_ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
+    EVP_DigestUpdate(md_ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
+    EVP_DigestFinal_ex(md_ctx, (unsigned char*)&hash1, nullptr);
+    EVP_MD_CTX_destroy(md_ctx);
+#endif
     uint256 hash2;
     SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
     return hash2;
@@ -86,12 +122,22 @@ inline uint256 Hash(const T1 p1begin, const T1 p1end,
 {
     static unsigned char pblank[1];
     uint256 hash1;
+# ifndef OPENSSL_NO_DEPRECATED
     SHA256_CTX ctx;
     SHA256_Init(&ctx);
     SHA256_Update(&ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
     SHA256_Update(&ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
     SHA256_Update(&ctx, (p3begin == p3end ? pblank : (unsigned char*)&p3begin[0]), (p3end - p3begin) * sizeof(p3begin[0]));
     SHA256_Final((unsigned char*)&hash1, &ctx);
+#else
+    auto md_ctx = EVP_MD_CTX_create();
+    EVP_DigestInit_ex(md_ctx, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(md_ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
+    EVP_DigestUpdate(md_ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
+    EVP_DigestUpdate(md_ctx, (p3begin == p3end ? pblank : (unsigned char*)&p3begin[0]), (p3end - p3begin) * sizeof(p3begin[0]));
+    EVP_DigestFinal_ex(md_ctx, (unsigned char*)&hash1, nullptr);
+    EVP_MD_CTX_destroy(md_ctx);
+#endif
     uint256 hash2;
     SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
     return hash2;
@@ -112,7 +158,15 @@ inline uint160 Hash160(const T1 pbegin, const T1 pend)
     uint256 hash1;
     SHA256((pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]), (unsigned char*)&hash1);
     uint160 hash2;
+# ifndef OPENSSL_NO_DEPRECATED
     RIPEMD160((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
+#else
+    uint32_t hash2_size = 0;
+    EVP_Digest((unsigned char*)&hash1, sizeof(hash1),
+               (unsigned char*)&hash2,
+               &hash2_size,
+               EVP_ripemd160(), nullptr);
+#endif
     return hash2;
 }
 
