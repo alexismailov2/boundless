@@ -4194,10 +4194,13 @@ static const unsigned int pSHA256InitState[8] =
 //#define OPENSSL_NO_DEPRECATED
 //#endif
 
+//TODO: We could not get rid of this simply dur to access to internal field closed in openssl 3.0
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void SHA256Transform(void* pstate, void* pinput, const void* pinit)
 {
     unsigned char data[64];
-#ifndef 1
+#if 1
     SHA256_CTX ctx;
     SHA256_Init(&ctx);
 #else
@@ -4221,6 +4224,7 @@ void SHA256Transform(void* pstate, void* pinput, const void* pinit)
     EVP_MD_CTX_destroy(ctxp);
 #endif
 }
+#pragma GCC diagnostic pop
 
 // Some explaining would be appreciated
 class COrphan

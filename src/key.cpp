@@ -8,6 +8,8 @@
 
 #include "key.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 // anonymous namespace with local implementation code (OpenSSL interaction)
 namespace {
 
@@ -281,7 +283,7 @@ public:
         return ret;
     }
 };
-
+#pragma GCC diagnostic pop
 }; // end of anonymous namespace
 
 bool CKey::Check(const unsigned char *vch) {
