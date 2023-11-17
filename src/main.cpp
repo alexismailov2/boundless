@@ -4190,22 +4190,36 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
 static const unsigned int pSHA256InitState[8] =
 {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
+//#ifndef OPENSSL_NO_DEPRECATED
+//#define OPENSSL_NO_DEPRECATED
+//#endif
+
 void SHA256Transform(void* pstate, void* pinput, const void* pinit)
 {
-    SHA256_CTX ctx;
     unsigned char data[64];
-
+#ifndef 1
+    SHA256_CTX ctx;
     SHA256_Init(&ctx);
-
+#else
+    EVP_MD_CTX* ctxp = EVP_MD_CTX_create();
+    EVP_DigestInit_ex(ctxp, EVP_sha256(), nullptr);
+#endif
     for (int i = 0; i < 16; i++)
         ((uint32_t*)data)[i] = ByteReverse(((uint32_t*)pinput)[i]);
 
+    // TODO: Could not be done with new openssl
     for (int i = 0; i < 8; i++)
         ctx.h[i] = ((uint32_t*)pinit)[i];
 
+#if 1
     SHA256_Update(&ctx, data, sizeof(data));
     for (int i = 0; i < 8; i++)
-        ((uint32_t*)pstate)[i] = ctx.h[i];
+      ((uint32_t*)pstate)[i] = ctx.h[i];
+#else
+    EVP_DigestUpdate(ctxp, data, sizeof(data));
+    EVP_DigestFinal_ex(ctxp, (unsigned char*)pstate, 32);
+    EVP_MD_CTX_destroy(ctxp);
+#endif
 }
 
 // Some explaining would be appreciated

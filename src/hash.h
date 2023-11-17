@@ -44,6 +44,7 @@ public:
 #ifndef OPENSSL_NO_DEPRECATED
         SHA256_Init(&ctx);
 #else
+        _ctx = EVP_MD_CTX_create();
         EVP_DigestInit_ex(_ctx, EVP_sha256(), nullptr);
 #endif
     }

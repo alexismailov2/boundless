@@ -29,10 +29,11 @@
 
 #include "scrypt.h"
 #include "util.h"
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
+#include <openssl/evp.h>
 #include <openssl/sha.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
 #ifdef _MSC_VER
@@ -60,9 +61,18 @@ static inline void be32enc(void *pp, uint32_t x)
 	p[0] = (x >> 24) & 0xff;
 }
 
+#ifndef OPENSSL_NO_DEPRECATED
+#define OPENSSL_NO_DEPRECATED
+#endif
+
 typedef struct HMAC_SHA256Context {
+#ifndef OPENSSL_NO_DEPRECATED
 	SHA256_CTX ictx;
 	SHA256_CTX octx;
+#else
+        EVP_MD_CTX* ictx;
+        EVP_MD_CTX* octx;
+#endif
 } HMAC_SHA256_CTX;
 
 /* Initialize an HMAC-SHA256 operation with the given key. */
@@ -73,30 +83,54 @@ HMAC_SHA256_Init(HMAC_SHA256_CTX *ctx, const void *_K, size_t Klen)
 	unsigned char khash[32];
 	const unsigned char *K = (const unsigned char *)_K;
 	size_t i;
-
+#ifndef OPENSSL_NO_DEPRECATED
+        ctx->ictx = EVP_MD_CTX_create();
+        ctx->octx = EVP_MD_CTX_create();
+#endif
 	/* If Klen > 64, the key is really SHA256(K). */
 	if (Klen > 64) {
+#ifndef OPENSSL_NO_DEPRECATED
 		SHA256_Init(&ctx->ictx);
 		SHA256_Update(&ctx->ictx, K, Klen);
 		SHA256_Final(khash, &ctx->ictx);
+#else
+                EVP_DigestInit_ex(ctx->ictx, EVP_sha256(), nullptr);
+                EVP_DigestUpdate(ctx->ictx, K, Klen);
+                EVP_DigestFinal_ex(ctx->ictx, khash, nullptr);
+#endif
 		K = khash;
 		Klen = 32;
 	}
 
+#ifndef OPENSSL_NO_DEPRECATED
 	/* Inner SHA256 operation is SHA256(K xor [block of 0x36] || data). */
 	SHA256_Init(&ctx->ictx);
+#else
+        EVP_DigestInit_ex(ctx->ictx, EVP_sha256(), nullptr);
+#endif
 	memset(pad, 0x36, 64);
 	for (i = 0; i < Klen; i++)
 		pad[i] ^= K[i];
+#ifndef OPENSSL_NO_DEPRECATED
 	SHA256_Update(&ctx->ictx, pad, 64);
+#else
+        EVP_DigestUpdate(ctx->ictx, pad, 64);
+#endif
 
+#ifndef OPENSSL_NO_DEPRECATED
 	/* Outer SHA256 operation is SHA256(K xor [block of 0x5c] || hash). */
 	SHA256_Init(&ctx->octx);
+#else
+        EVP_DigestInit_ex(ctx->octx, EVP_sha256(), nullptr);
+#endif
 	memset(pad, 0x5c, 64);
 	for (i = 0; i < Klen; i++)
 		pad[i] ^= K[i];
+#ifndef OPENSSL_NO_DEPRECATED
 	SHA256_Update(&ctx->octx, pad, 64);
-
+#else
+        EVP_DigestUpdate(ctx->octx, pad, 64);
+#endif
 	/* Clean the stack. */
 	memset(khash, 0, 32);
 }
@@ -105,8 +139,12 @@ HMAC_SHA256_Init(HMAC_SHA256_CTX *ctx, const void *_K, size_t Klen)
 static void
 HMAC_SHA256_Update(HMAC_SHA256_CTX *ctx, const void *in, size_t len)
 {
+#ifndef OPENSSL_NO_DEPRECATED
 	/* Feed data to the inner SHA256 operation. */
 	SHA256_Update(&ctx->ictx, in, len);
+#else
+        EVP_DigestUpdate(ctx->ictx, in, len);
+#endif
 }
 
 /* Finish an HMAC-SHA256 operation. */
@@ -115,6 +153,7 @@ HMAC_SHA256_Final(unsigned char digest[32], HMAC_SHA256_CTX *ctx)
 {
 	unsigned char ihash[32];
 
+#ifndef OPENSSL_NO_DEPRECATED
 	/* Finish the inner SHA256 operation. */
 	SHA256_Final(ihash, &ctx->ictx);
 
@@ -123,9 +162,17 @@ HMAC_SHA256_Final(unsigned char digest[32], HMAC_SHA256_CTX *ctx)
 
 	/* Finish the outer SHA256 operation. */
 	SHA256_Final(digest, &ctx->octx);
-
+#else
+        EVP_DigestFinal_ex(ctx->ictx, ihash, nullptr);
+        EVP_DigestUpdate(ctx->octx, ihash, 32);
+        EVP_DigestFinal_ex(ctx->octx, digest, nullptr);
+#endif
 	/* Clean the stack. */
 	memset(ihash, 0, 32);
+#ifndef OPENSSL_NO_DEPRECATED
+        EVP_MD_CTX_destroy(ctx->ictx);
+        EVP_MD_CTX_destroy(ctx->octx);
+#endif
 }
 
 /**
